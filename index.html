@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Knowledge Graph Researcher Rankings</title>
+
+    <style>
+        :root {
+            --background: #f5f7fb;
+            --surface: #ffffff;
+            --border: #dfe4ea;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --success: #047857;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 32px;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .researcher {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 18px;
+            padding: 22px;
+        }
+
+        .researcher-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .rank {
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .name {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .name a {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .name a:hover {
+            color: var(--primary);
+        }
+
+        .metrics {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .metric {
+            background: var(--primary-light);
+            border-radius: 8px;
+            color: var(--primary);
+            padding: 7px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .section {
+            margin-top: 18px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #f3f4f6;
+            border-radius: 6px;
+            color: #374151;
+            font-size: 12px;
+            padding: 5px 8px;
+        }
+
+        .publication {
+            border-top: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        .publication:first-child {
+            border-top: 0;
+        }
+
+        .publication-title {
+            font-weight: 600;
+        }
+
+        .publication-title a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .publication-meta {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .weight {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .footer {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 32px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+
+            .name {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Knowledge Graph Researcher Rankings</h1>
+
+    <div class="subtitle">
+        DBLP-based ranking for the period
+        2021–2026.
+    </div>
+
+    <div class="summary">
+        <div class="summary-card">
+            <div class="summary-label">Researchers</div>
+            <div class="summary-value">0</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">KG publications</div>
+            <div class="summary-value">0</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Total weighted score</div>
+            <div class="summary-value">0</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Generated</div>
+            <div class="summary-value" style="font-size: 18px;">
+                2026-09-13 19:42:26
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="footer">
+        Each co-author receives the complete weight of the paper.
+        Scores are based on DBLP metadata and title-based KG detection.
+    </div>
+
+</div>
+</body>
+</html>
