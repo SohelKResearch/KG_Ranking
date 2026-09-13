@@ -8,6 +8,7 @@ on:
       - main
 
   schedule:
+    # Runs every Monday at 02:00 UTC
     - cron: "0 2 * * 1"
 
 permissions:
@@ -38,10 +39,36 @@ jobs:
             --end-year 2026 \
             --top-n 200
 
+      - name: Check generated output
+        run: |
+          echo "===== Current directory ====="
+          pwd
+
+          echo "===== Repository files ====="
+          find . -maxdepth 3 -type f | sort
+
+          echo "===== Output directory ====="
+          ls -lah output
+
+          echo "===== Generated HTML file ====="
+          test -f output/kg_rankings.html
+
+          echo "===== HTML file size ====="
+          wc -c output/kg_rankings.html
+
       - name: Prepare GitHub Pages files
         run: |
+          rm -rf docs
           mkdir -p docs
           cp output/kg_rankings.html docs/index.html
+
+      - name: Check Pages files
+        run: |
+          echo "===== Docs directory ====="
+          ls -lah docs
+
+          echo "===== Index file size ====="
+          wc -c docs/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -49,3 +76,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
           publish_branch: gh-pages
+          force_orphan: true
