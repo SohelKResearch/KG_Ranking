@@ -1,0 +1,51 @@
+name: Generate and Deploy KG Rankings
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: "0 2 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run ranking pipeline
+        run: |
+          python kg_ranking.py \
+            --start-year 2021 \
+            --end-year 2026 \
+            --top-n 200
+
+      - name: Prepare GitHub Pages files
+        run: |
+          mkdir -p docs
+          cp output/kg_rankings.html docs/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
