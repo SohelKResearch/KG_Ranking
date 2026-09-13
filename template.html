@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ generated_title or "Knowledge Graph Researcher Rankings" }}</title>
+
+    <meta
+        name="description"
+        content="Ranking researchers based on Knowledge Graph-related publications."
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --primary-color: #263238;
+            --secondary-color: #546e7a;
+            --accent-color: #1565c0;
+            --light-bg: #f5f7fa;
+            --border-color: #dfe3e8;
+            --text-color: #263238;
+            --muted-color: #6c757d;
+        }
+
+        body {
+            background: var(--light-bg);
+            color: var(--text-color);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(
+                135deg,
+                #263238,
+                #37474f
+            );
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .hero-section {
+            background: linear-gradient(
+                135deg,
+                #ffffff,
+                #eaf2f8
+            );
+            border-bottom: 1px solid var(--border-color);
+            padding: 48px 0;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 750;
+            color: #1f2933;
+        }
+
+        .hero-subtitle {
+            color: var(--muted-color);
+            font-size: 1.05rem;
+            max-width: 850px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            height: 100%;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 750;
+            line-height: 1.2;
+            color: #1f2933;
+        }
+
+        .stat-label {
+            color: var(--muted-color);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
+            overflow: hidden;
+        }
+
+        .section-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            background: #fbfcfd;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        .ranking-table {
+            margin-bottom: 0;
+        }
+
+        .ranking-table thead th {
+            background: #f1f4f7;
+            border-bottom: 2px solid #d5dce2;
+            color: #455a64;
+            font-size: 0.8rem;
+            font-weight: 750;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .ranking-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .ranking-table tbody tr:hover {
+            background-color: #f8fbff;
+        }
+
+        .ranking-table td {
+            vertical-align: middle;
+            border-color: #edf0f2;
+        }
+
+        .rank-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            height: 34px;
+            border-radius: 9px;
+            background: #eceff1;
+            color: #37474f;
+            font-weight: 750;
+        }
+
+        .rank-first {
+            background: #ffd54f;
+            color: #5d4037;
+        }
+
+        .rank-second {
+            background: #cfd8dc;
+            color: #37474f;
+        }
+
+        .rank-third {
+            background: #ffb74d;
+            color: #5d4037;
+        }
+
+        .author-name {
+            color: #1e3a5f;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .author-affiliation {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+
+        .score-badge {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 20px;
+            color: #0d47a1;
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            white-space: nowrap;
+        }
+
+        .venue-badge {
+            background: #f1f8e9;
+            border: 1px solid #dcedc8;
+            border-radius: 6px;
+            color: #33691e;
+            display: inline-block;
+            font-size: 0.75rem;
+            margin: 2px 3px 2px 0;
+            padding: 4px 7px;
+        }
+
+        .year-badge {
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            border-radius: 6px;
+            color: #e65100;
+            display: inline-block;
+            font-size: 0.75rem;
+            margin: 2px 3px 2px 0;
+            padding: 4px 7px;
+        }
+
+        .publication-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .publication-item {
+            border-bottom: 1px solid #edf0f2;
+            padding: 14px 0;
+        }
+
+        .publication-item:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .publication-title {
+            color: #1e3a5f;
+            font-weight: 650;
+            line-height: 1.45;
+        }
+
+        .publication-meta {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .publication-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .publication-link:hover {
+            text-decoration: underline;
+        }
+
+        .filter-panel {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .filter-label {
+            color: #455a64;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .search-input {
+            border: 1px solid #cfd8dc;
+            border-radius: 9px;
+            min-height: 42px;
+        }
+
+        .search-input:focus {
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.12);
+        }
+
+        .empty-state {
+            color: var(--muted-color);
+            padding: 42px 20px;
+            text-align: center;
+        }
+
+        .footer {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+            padding: 32px 0;
+            text-align: center;
+        }
+
+        .small-muted {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 34px 0;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-body,
+            .section-header {
+                padding: 18px;
+            }
+
+            .ranking-table {
+                font-size: 0.9rem;
+            }
+
+            .stat-value {
+                font-size: 1.65rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-diagram-3 me-2"></i>
+                KG Researcher Rankings
+            </a>
+
+            <span class="navbar-text text-light small">
+                Knowledge Graph Publications
+            </span>
+        </div>
+    </nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <span class="badge text-bg-primary">
+                            Researcher Ranking
+                        </span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        Knowledge Graph Researcher Rankings
+                    </h1>
+
+                    <p class="hero-subtitle mb-0">
+                        Researchers are ranked by the number of
+                        Knowledge Graph-related publications between
+                        {{ start_year }} and {{ end_year }}.
+                        Each retained publication contributes exactly
+                        one point.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 text-lg-end">
+                    <div class="small-muted">
+                        Evaluation period
+                    </div>
+
+                    <div class="fs-4 fw-bold">
+                        {{ start_year }}–{{ end_year }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <main class="container py-4">
+
+        <!-- Statistics -->
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon mb-2">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_authors }}
+                    </div>
+
+                    <div class="stat-label">
+                        Ranked researchers
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon mb-2">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+
+                    <div class="stat-value">
+                        {{ total_publications }}
+                    </div>
+
+                    <div class="stat-label">
+                        KG-related publications
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon mb-2">
+                        <i class="bi bi-calendar-range"></i>
+                    </div>
+
+                    <div class="stat-value">
+                        {{ end_year - start_year + 1 }}
+                    </div>
+
+                    <div class="stat-label">
+                        Years covered
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Search and Filter -->
+        <div class="filter-panel mb-4">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-lg-8">
+                    <label
+                        for="researcherSearch"
+                        class="filter-label"
+                    >
+                        Search researcher
+                    </label>
+
+                    <input
+                        type="search"
+                        id="researcherSearch"
+                        class="form-control search-input"
+                        placeholder="Search by researcher name or affiliation..."
+                    >
+                </div>
+
+                <div class="col-lg-4">
+                    <label
+                        for="scoreFilter"
+                        class="filter-label"
+                    >
+                        Minimum KG publications
+                    </label>
+
+                    <select
+                        id="scoreFilter"
+                        class="form-select search-input"
+                    >
+                        <option value="0">All researchers</option>
+                        <option value="1">At least 1 publication</option>
+                        <option value="5">At least 5 publications</option>
+                        <option value="10">At least 10 publications</option>
+                        <option value="20">At least 20 publications</option>
+                        <option value="50">At least 50 publications</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Ranking Table -->
+        <section class="section-card mb-4">
+            <div class="section-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h2>
+                        <i class="bi bi-trophy me-2"></i>
+                        Researcher Rankings
+                    </h2>
+
+                    <span
+                        id="visibleResearcherCount"
+                        class="small-muted"
+                    >
+                        Showing {{ authors|length }} researchers
+                    </span>
+                </div>
+            </div>
+
+            <div class="section-body p-0">
+                {% if authors %}
+
+                <div class="table-responsive">
+                    <table
+                        class="table ranking-table"
+                        id="rankingTable"
+                    >
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Rank</th>
+                                <th>Researcher</th>
+                                <th>KG Publications</th>
+                                <th>Venues</th>
+                                <th>Years</th>
+                                <th class="pe-4">Profile</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for author in authors %}
+                            <tr
+                                class="researcher-row"
+                                data-name="{{ author.name|lower }}"
+                                data-affiliation="{{ (author.affiliation or author.institution or '')|lower }}"
+                                data-score="{{ author.score or 0 }}"
+                            >
+                                <td class="ps-4">
+                                    {% if author.rank == 1 %}
+                                        <span class="rank-number rank-first">
+                                            {{ author.rank }}
+                                        </span>
+                                    {% elif author.rank == 2 %}
+                                        <span class="rank-number rank-second">
+                                            {{ author.rank }}
+                                        </span>
+                                    {% elif author.rank == 3 %}
+                                        <span class="rank-number rank-third">
+                                            {{ author.rank }}
+                                        </span>
+                                    {% else %}
+                                        <span class="rank-number">
+                                            {{ author.rank }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <div class="author-name">
+                                        {{ author.name }}
+                                    </div>
+
+                                    {% if author.affiliation %}
+                                        <div class="author-affiliation">
+                                            <i class="bi bi-building me-1"></i>
+                                            {{ author.affiliation }}
+                                        </div>
+                                    {% elif author.institution %}
+                                        <div class="author-affiliation">
+                                            <i class="bi bi-building me-1"></i>
+                                            {{ author.institution }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="score-badge">
+                                        <i class="bi bi-file-earmark-text me-1"></i>
+                                        {{ author.score or author.kg_publications or 0 }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% set unique_venues = author.venues|unique|list %}
+
+                                    {% if unique_venues %}
+                                        {% for venue in unique_venues[:8] %}
+                                            <span class="venue-badge">
+                                                {{ venue }}
+                                            </span>
+                                        {% endfor %}
+
+                                        {% if unique_venues|length > 8 %}
+                                            <span class="small-muted">
+                                                +{{ unique_venues|length - 8 }} more
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="small-muted">
+                                            Not available
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% set unique_years = author.years|unique|sort(reverse=true)|list %}
+
+                                    {% if unique_years %}
+                                        {% for year in unique_years[:6] %}
+                                            <span class="year-badge">
+                                                {{ year }}
+                                            </span>
+                                        {% endfor %}
+
+                                        {% if unique_years|length > 6 %}
+                                            <span class="small-muted">
+                                                +{{ unique_years|length - 6 }} more
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="small-muted">
+                                            Not available
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="pe-4">
+                                    {% if author.homepage %}
+                                        <a
+                                            class="publication-link"
+                                            href="{{ author.homepage }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                            Homepage
+                                        </a>
+                                    {% elif author.profile_url %}
+                                        <a
+                                            class="publication-link"
+                                            href="{{ author.profile_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                            Profile
+                                        </a>
+                                    {% elif author.url %}
+                                        <a
+                                            class="publication-link"
+                                            href="{{ author.url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                            Profile
+                                        </a>
+                                    {% else %}
+                                        <span class="small-muted">
+                                            —
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    id="noSearchResults"
+                    class="empty-state d-none"
+                >
+                    <i class="bi bi-search fs-2 d-block mb-2"></i>
+                    No researchers match your search criteria.
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                    <h5>No ranking data available</h5>
+                    <p class="mb-0">
+                        No KG-related publications were found for the
+                        selected period.
+                    </p>
+                </div>
+
+                {% endif %}
+            </div>
+        </section>
+
+
+        <!-- Publication Details -->
+        <section class="section-card mb-4">
+            <div class="section-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h2>
+                        <i class="bi bi-journal-text me-2"></i>
+                        KG-related Publications
+                    </h2>
+
+                    <span class="small-muted">
+                        {{ publications|length }} publications
+                    </span>
+                </div>
+            </div>
+
+            <div class="section-body">
+
+                {% if publications %}
+
+                <div class="mb-3">
+                    <input
+                        type="search"
+                        id="publicationSearch"
+                        class="form-control search-input"
+                        placeholder="Search publications by title, venue, or year..."
+                    >
+                </div>
+
+                <ul
+                    class="publication-list"
+                    id="publicationList"
+                >
+                    {% for publication in publications %}
+                    <li
+                        class="publication-item publication-row"
+                        data-publication-text="
+                            {{ publication.title|lower }}
+                            {{ publication.venue|lower }}
+                            {{ publication.year }}
+                        "
+                    >
+                        <div class="publication-title">
+                            {{ publication.title }}
+                        </div>
+
+                        <div class="publication-meta">
+                            {% if publication.year %}
+                                <span class="me-3">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ publication.year }}
+                                </span>
+                            {% endif %}
+
+                            {% if publication.venue %}
+                                <span class="me-3">
+                                    <i class="bi bi-building me-1"></i>
+                                    {{ publication.venue }}
+                                </span>
+                            {% endif %}
+
+                            {% if publication.source %}
+                                <span class="me-3">
+                                    <i class="bi bi-database me-1"></i>
+                                    {{ publication.source }}
+                                </span>
+                            {% endif %}
+
+                            {% if publication.weight %}
+                                <span>
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Weight: {{ publication.weight }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {% if publication.url %}
+                            <div class="mt-2">
+                                <a
+                                    class="publication-link"
+                                    href="{{ publication.url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="bi bi-link-45deg me-1"></i>
+                                    View publication
+                                </a>
+                            </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div
+                    id="noPublicationResults"
+                    class="empty-state d-none"
+                >
+                    <i class="bi bi-search fs-2 d-block mb-2"></i>
+                    No publications match your search.
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+                    <i class="bi bi-journal-x fs-1 d-block mb-3"></i>
+                    No publications available.
+                </div>
+
+                {% endif %}
+
+            </div>
+        </section>
+
+
+        <!-- Methodology -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2>
+                    <i class="bi bi-info-circle me-2"></i>
+                    Ranking Methodology
+                </h2>
+            </div>
+
+            <div class="section-body">
+                <p>
+                    This ranking counts publications related to
+                    Knowledge Graphs, Semantic Web, ontologies,
+                    knowledge representation, entity linking,
+                    knowledge graph reasoning, knowledge graph
+                    embeddings, KG question answering, and related
+                    topics.
+                </p>
+
+                <ul class="mb-0">
+                    <li>
+                        Only publications within the selected year
+                        range are considered.
+                    </li>
+                    <li>
+                        Publications are identified using KG-related
+                        keywords and core KG venues.
+                    </li>
+                    <li>
+                        Every retained publication contributes exactly
+                        one point.
+                    </li>
+                    <li>
+                        Researcher score equals the number of retained
+                        KG-related publications.
+                    </li>
+                    <li>
+                        Researchers are sorted in descending order of
+                        their scores.
+                    </li>
+                    <li>
+                        Tied researchers receive the same rank.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div>
+                Knowledge Graph Researcher Rankings
+            </div>
+
+            <div class="mt-1">
+                Generated automatically from publication metadata.
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const researcherSearch =
+                document.getElementById("researcherSearch");
+
+            const scoreFilter =
+                document.getElementById("scoreFilter");
+
+            const researcherRows =
+                document.querySelectorAll(".researcher-row");
+
+            const visibleResearcherCount =
+                document.getElementById("visibleResearcherCount");
+
+            const noSearchResults =
+                document.getElementById("noSearchResults");
+
+            const publicationSearch =
+                document.getElementById("publicationSearch");
+
+            const publicationRows =
+                document.querySelectorAll(".publication-row");
+
+            const noPublicationResults =
+                document.getElementById("noPublicationResults");
+
+
+            function filterResearchers() {
+                const searchText = (
+                    researcherSearch
+                        ? researcherSearch.value.toLowerCase().trim()
+                        : ""
+                );
+
+                const minimumScore = parseInt(
+                    scoreFilter
+                        ? scoreFilter.value
+                        : "0",
+                    10
+                );
+
+                let visibleCount = 0;
+
+                researcherRows.forEach(function (row) {
+                    const name =
+                        row.dataset.name || "";
+
+                    const affiliation =
+                        row.dataset.affiliation || "";
+
+                    const score = parseInt(
+                        row.dataset.score || "0",
+                        10
+                    );
+
+                    const matchesText =
+                        name.includes(searchText) ||
+                        affiliation.includes(searchText);
+
+                    const matchesScore =
+                        score >= minimumScore;
+
+                    const visible =
+                        matchesText && matchesScore;
+
+                    row.style.display =
+                        visible ? "" : "none";
+
+                    if (visible) {
+                        visibleCount += 1;
+                    }
+                });
+
+                if (visibleResearcherCount) {
+                    visibleResearcherCount.textContent =
+                        "Showing " + visibleCount + " researchers";
+                }
+
+                if (noSearchResults) {
+                    noSearchResults.classList.toggle(
+                        "d-none",
+                        visibleCount !== 0
+                    );
+                }
+            }
+
+
+            function filterPublications() {
+                const searchText = (
+                    publicationSearch
+                        ? publicationSearch.value.toLowerCase().trim()
+                        : ""
+                );
+
+                let visibleCount = 0;
+
+                publicationRows.forEach(function (row) {
+                    const publicationText =
+                        row.dataset.publicationText || "";
+
+                    const visible =
+                        publicationText.includes(searchText);
+
+                    row.style.display =
+                        visible ? "" : "none";
+
+                    if (visible) {
+                        visibleCount += 1;
+                    }
+                });
+
+                if (noPublicationResults) {
+                    noPublicationResults.classList.toggle(
+                        "d-none",
+                        visibleCount !== 0
+                    );
+                }
+            }
+
+
+            if (researcherSearch) {
+                researcherSearch.addEventListener(
+                    "input",
+                    filterResearchers
+                );
+            }
+
+            if (scoreFilter) {
+                scoreFilter.addEventListener(
+                    "change",
+                    filterResearchers
+                );
+            }
+
+            if (publicationSearch) {
+                publicationSearch.addEventListener(
+                    "input",
+                    filterPublications
+                );
+            }
+
+            filterResearchers();
+            filterPublications();
+
+        });
+    </script>
+
+</body>
+</html>
